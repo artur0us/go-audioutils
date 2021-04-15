@@ -15,3 +15,17 @@ type AudioFileDurationResult struct {
 	FailMsg   string   `json:"fail_msg"`
 	Duration  *float64 `json:"duration"`
 }
+
+// AudioFileBasicInfoResult : ...
+type AudioFileBasicInfoResult struct {
+	IsSuccess bool   `json:"is_success"`
+	FailCode  int    `json:"fail_code"`
+	FailMsg   string `json:"fail_msg"`
+
+	Duration       *float64 `json:"duration"`
+	Size           *int64   `json:"size"`
+	Bitrate        *int     `json:"bitrate"`
+	FormatName     *string  `json:"format_name"`
+	FormatLongName *string  `json:"format_long_name"`
+	StreamsCount   *int     `json:"streams_count"`
+}

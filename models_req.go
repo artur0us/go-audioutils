@@ -61,3 +61,9 @@ type AudioFileDurationRequest struct {
 	SrcLocationType int    `json:"src_location_type"`
 	SrcLocation     string `json:"src_location"`
 }
+
+// AudioFileBasicInfoRequest : ...
+type AudioFileBasicInfoRequest struct {
+	SrcLocationType int    `json:"src_location_type"`
+	SrcLocation     string `json:"src_location"`
+}

@@ -32,6 +32,13 @@ func main() {
 		log.Println(*durationResult.Duration)
 	}
 
+	// Basic info
+	basicInfoResult := _audioUtils.GetAudioFileBasicInfo(audioutils.AudioFileBasicInfoRequest{
+		SrcLocationType: audioutils.AudioFileSrcLocationTypeLocal,
+		SrcLocation:     "source_file.mp3",
+	})
+	log.Println(basicInfoResult)
+
 	// HLS
 	hlsM3U8FileName := "playlist.m3u8"
 	hlsSegmentFilePrefix := "hls_seg_"
