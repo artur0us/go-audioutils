@@ -88,3 +88,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,vscode
+
+
+## Additional ##
+/**/output
+source_file.mp3

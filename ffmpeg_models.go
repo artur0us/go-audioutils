@@ -12,13 +12,14 @@ type ffmpegAudioFileToHLSInput struct {
 	DestDirPath string `json:"dest_dir_path"`
 
 	// Optional
-	DestM3U8FileName      *string `json:"dest_m3u8_file_name"`
-	DestSegmentFilePrefix *string `json:"dest_segment_file_prefix"`
-	LogLevel              *string `json:"log_level"`
-	ThreadsCount          *int    `json:"threads_count"`
-	SegmentSeconds        *int    `json:"segment_seconds"`
-	Bitrate               *int    `json:"bitrate"`
-	Codec                 *string `json:"codec"`
+	DestM3U8FileName           *string `json:"dest_m3u8_file_name"`
+	DestSegmentFilePrefix      *string `json:"dest_segment_file_prefix"`
+	LogLevel                   *string `json:"log_level"`
+	ThreadsCount               *int    `json:"threads_count"`
+	SegmentSeconds             *int    `json:"segment_seconds"`
+	Bitrate                    *int    `json:"bitrate"`
+	Codec                      *string `json:"codec"`
+	AppendingSegmentFilePrefix *string `json:"appending_segment_file_prefix"`
 }
 
 // validate : ...
@@ -95,6 +96,12 @@ func (_f *ffmpegAudioFileToHLSInput) validate() error {
 		}
 		if !isCodecAvail {
 			return errors.New("specified codec is unavailable")
+		}
+	}
+	// AppendingSegmentFilePrefix
+	if _f.AppendingSegmentFilePrefix != nil {
+		if strings.ReplaceAll(*_f.AppendingSegmentFilePrefix, " ", "") == "" {
+			return errors.New("appending segment file prefix in M3U8 playlist is empty")
 		}
 	}
 

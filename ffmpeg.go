@@ -21,7 +21,9 @@ func (_a *AudioUtils) ffmpegSrcAudioFileToHLS(input ffmpegAudioFileToHLSInput) (
 	// URL:
 	// ffmpeg -y -i https://localhost/source_file.mp3 -hide_banner -y -threads 0 -v quiet -progress - -loglevel verbose -c:a aac -b:a 128k -muxdelay 0 -f segment -sc_threshold 0 -segment_time 45 -segment_list ./output/playlist.m3u8 -segment_format mpegts ./output/result_file_%d.m4a
 
+	_a.InfoLogger.Printf("validating input: %v\n", input)
 	if err := input.validate(); err != nil {
+		_a.ErrLogger.Printf("input validation failed: %v\n", err)
 		return nil, err
 	}
 
@@ -34,11 +36,12 @@ func (_a *AudioUtils) ffmpegSrcAudioFileToHLS(input ffmpegAudioFileToHLSInput) (
 	}
 	var destM3U8FileDirPath string = fmt.Sprintf("%v/%v", destDirPath, destM3U8FileName) // fmt.Sprintf(`"%v/playlist.m3u8"`, destDirPath)
 
+	var destSegmentFileExt string = "m4a"
 	var destSegmentFilePrefix string = "result_file_"
 	if input.DestSegmentFilePrefix != nil {
 		destSegmentFilePrefix = *input.DestSegmentFilePrefix
 	}
-	var destSegmentsFilesDirPath string = destDirPath + "/" + destSegmentFilePrefix + "%d.m4a" // `"` + destDirPath + `/result_file_%d.m4a"`
+	var destSegmentsFilesDirPath string = destDirPath + "/" + destSegmentFilePrefix + "%d." + destSegmentFileExt // `"` + destDirPath + `/result_file_%d.m4a"`
 
 	var ffmpegThreadsCount int = 0
 	if input.ThreadsCount != nil {
@@ -65,6 +68,20 @@ func (_a *AudioUtils) ffmpegSrcAudioFileToHLS(input ffmpegAudioFileToHLSInput) (
 		ffmpegHLSOneSegmentSeconds = *input.SegmentSeconds
 	}
 
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> srcFilePath: %v\n", srcFilePath)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destDirPath: %v\n", destDirPath)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destM3U8FileName: %v\n", destM3U8FileName)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destM3U8FileDirPath: %v\n", destM3U8FileDirPath)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destSegmentFileExt: %v\n", destSegmentFileExt)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destSegmentFilePrefix: %v\n", destSegmentFilePrefix)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> destSegmentsFilesDirPath: %v\n", destSegmentsFilesDirPath)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> ffmpegThreadsCount: %v\n", ffmpegThreadsCount)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> ffmpegLogLevel: %v\n", ffmpegLogLevel)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> ffmpegOutputHLSAudioBitrate: %v\n", ffmpegOutputHLSAudioBitrate)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> ffmpegOutputHLSAudioCodec: %v\n", ffmpegOutputHLSAudioCodec)
+	_a.InfoLogger.Printf("ffmpegSrcAudioFileToHLS internal variables -> ffmpegHLSOneSegmentSeconds: %v\n", ffmpegHLSOneSegmentSeconds)
+
+	_a.InfoLogger.Println("building new ffmpeg process config...")
 	ctx := context.Background()
 	args := []string{
 		"-y", "-i", srcFilePath,
@@ -98,10 +115,33 @@ func (_a *AudioUtils) ffmpegSrcAudioFileToHLS(input ffmpegAudioFileToHLSInput) (
 	}
 	cmd.Dir = cwd
 
+	_a.InfoLogger.Println("running ffmpeg process...")
 	if err := cmd.Run(); err != nil {
+		_a.ErrLogger.Printf("failed to start ffmpeg process: %v\n", err)
+		_a.ErrLogger.Printf("ffmpeg stdout:\n%v\n", stdoutBuf.String())
+		_a.ErrLogger.Printf("ffmpeg stderr:\n%v\n", stderrBuf.String())
 		return nil, fmt.Errorf("failed to start ffmpeg process: %w", err)
 	}
 
+	_a.InfoLogger.Println("checking appending segment file prefix...")
+	if input.AppendingSegmentFilePrefix != nil {
+		_a.InfoLogger.Printf("appending segment file prefix is set: %v\n", *input.AppendingSegmentFilePrefix)
+
+		selectedLinesPatterns := []string{destSegmentFilePrefix, destSegmentFileExt}
+
+		_a.InfoLogger.Printf("calling *addStrBeforeFileNameInM3U8* function with params: %v; %v; %v\n", destM3U8FileDirPath, selectedLinesPatterns, *input.AppendingSegmentFilePrefix)
+		err = addStrBeforeFileNameInM3U8(
+			destM3U8FileDirPath,
+			selectedLinesPatterns,
+			*input.AppendingSegmentFilePrefix,
+		)
+		if err != nil {
+			_a.ErrLogger.Printf("failed to add string before segment files names in M3U8 playlist file: %v\n", err)
+			return nil, fmt.Errorf("failed to add string before segment files names in M3U8 playlist file: %w", err)
+		}
+	}
+
+	_a.InfoLogger.Printf("audio file is successfully converted to HLS: (destDirPath: %v)\n", destDirPath)
 	var res *ffmpegAudioFileToHLSResult = &ffmpegAudioFileToHLSResult{}
 	res.FFMpegRespStdout = stdoutBuf.String()
 	res.FFMpegRespStderr = stderrBuf.String()

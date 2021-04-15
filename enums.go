@@ -10,9 +10,10 @@ const (
 const (
 	SrcAudioToHLSFailNotImpl           int = 1 // not implemented
 	SrcAudioToHLSFailUnknown           int = 2 // unknown error
-	SrcAudioToHLSFailInvalidSrcLocType int = 3 // invalid source location type
-	SrcAudioToHLSFailParseAbsDestPath  int = 4 // invalid source location type
-	SrcAudioToHLSFailFileNotFound      int = 5 // specified file is not found
+	SrcAudioToHLSFailInvalidInputData  int = 3 // invalid input data
+	SrcAudioToHLSFailInvalidSrcLocType int = 4 // invalid source location type
+	SrcAudioToHLSFailParseAbsDestPath  int = 5 // failed to parse absolute destination path
+	SrcAudioToHLSFailFileNotFound      int = 6 // specified file is not found
 )
 
 // Audio file duration getting fail enums
