@@ -29,3 +29,12 @@ type AudioFileBasicInfoResult struct {
 	FormatLongName *string  `json:"format_long_name"`
 	StreamsCount   *int     `json:"streams_count"`
 }
+
+// AudioFileWaveformDataResult : ...
+type AudioFileWaveformDataResult struct {
+	IsSuccess bool   `json:"is_success"`
+	FailCode  int    `json:"fail_code"`
+	FailMsg   string `json:"fail_msg"`
+
+	Points *[]int `json:"points"`
+}

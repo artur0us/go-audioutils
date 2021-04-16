@@ -56,6 +56,34 @@ func (_s *SrcAudioToHLSRequest) validate() (int, error) {
 	return 0, nil
 }
 
+// AudioFileWaveformDataRequest : ...
+type AudioFileWaveformDataRequest struct {
+	SrcLocationType int    `json:"src_location_type"`
+	SrcLocation     string `json:"src_location"`
+
+	PointsPerSecond *int `json:"points_per_second"`
+	DataBitsCount   *int `json:"data_bits_count"`
+}
+
+// validate : ...
+func (_a *AudioFileWaveformDataRequest) validate() (int, error) {
+	if _a == nil {
+		return SrcAudioToHLSFailInvalidInputData, errors.New("input is nil")
+	}
+
+	// SrcLocationType
+	if _a.SrcLocationType != AudioFileSrcLocationTypeLocal && _a.SrcLocationType != AudioFileSrcLocationTypeURL {
+		return AudioFileWaveformDataGetFailInvalidSrcLocType, errors.New("unknown source location type")
+	}
+
+	// SrcLocation
+	if strings.ReplaceAll(_a.SrcLocation, " ", "") == "" {
+		return AudioFileWaveformDataGetFailInvalidInputData, errors.New("source location is empty")
+	}
+
+	return 0, nil
+}
+
 // AudioFileDurationRequest : ...
 type AudioFileDurationRequest struct {
 	SrcLocationType int    `json:"src_location_type"`

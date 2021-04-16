@@ -3,12 +3,21 @@ package audioutils
 import (
 	"bufio"
 	"errors"
+	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
+
+// isUrl : ...
+func isUrl(urlString string) bool {
+	parsedURL, err := url.Parse(urlString)
+	return err == nil && parsedURL.Scheme != "" && parsedURL.Host != ""
+}
 
 // isFileExists : ...
 func isFileExists(locationType int, fileLocation string) bool {
@@ -26,6 +35,23 @@ func isFileExists(locationType int, fileLocation string) bool {
 		}
 	}
 	return true
+}
+
+func downloadFileFromWeb(fileURL string, destFilePath string) error {
+	resp, err := http.Get(fileURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out, err := os.Create(destFilePath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 // addStrBeforeFileNameInM3U8 : ...
@@ -86,6 +112,16 @@ func addStrBeforeFileNameInM3U8(m3u8FileAbsPath string, selectedLinesPatterns []
 	dataWriter.Flush()
 
 	return nil
+}
+
+var randStrChars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-")
+
+func genRandStr(strLen int) string {
+	b := make([]rune, strLen)
+	for i := range b {
+		b[i] = randStrChars[rand.Intn(len(randStrChars))]
+	}
+	return string(b)
 }
 
 // IsAudioFile : ...

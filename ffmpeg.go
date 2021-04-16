@@ -11,7 +11,7 @@ import (
 
 // ffmpeg binary path
 const (
-	FFMpegPath string = "ffmpeg"
+	ffmpegPath string = "ffmpeg"
 )
 
 // ffmpegSrcAudioFileToHLS : ...
@@ -103,7 +103,7 @@ func (_a *AudioUtils) ffmpegSrcAudioFileToHLS(input ffmpegAudioFileToHLSInput) (
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, FFMpegPath, args...)
+	cmd := exec.CommandContext(ctx, ffmpegPath, args...)
 	cmd.SysProcAttr = nil
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf

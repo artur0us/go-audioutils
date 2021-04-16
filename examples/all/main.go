@@ -3,8 +3,13 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/artur0us/go-audioutils"
+)
+
+const (
+	stepsDelaySecs int = 5
 )
 
 // go run .
@@ -32,12 +37,33 @@ func main() {
 		log.Println(*durationResult.Duration)
 	}
 
+	time.Sleep(time.Duration(stepsDelaySecs) * time.Second)
+
 	// Basic info
 	basicInfoResult := _audioUtils.GetAudioFileBasicInfo(audioutils.AudioFileBasicInfoRequest{
 		SrcLocationType: audioutils.AudioFileSrcLocationTypeLocal,
 		SrcLocation:     "source_file.mp3",
 	})
 	log.Println(basicInfoResult)
+
+	time.Sleep(time.Duration(stepsDelaySecs) * time.Second)
+
+	// Waveform data
+	pointsPerSecond := 3
+	dataBitsCount := 8
+	waveformDataResult := _audioUtils.GetAudioFileWaveformData(audioutils.AudioFileWaveformDataRequest{
+		SrcLocationType: audioutils.AudioFileSrcLocationTypeLocal,
+		SrcLocation:     "source_file.mp3",
+
+		PointsPerSecond: &pointsPerSecond,
+		DataBitsCount:   &dataBitsCount,
+	})
+	log.Println(waveformDataResult)
+	if waveformDataResult.Points != nil {
+		log.Println(*waveformDataResult.Points)
+	}
+
+	time.Sleep(time.Duration(stepsDelaySecs) * time.Second)
 
 	// HLS
 	hlsM3U8FileName := "playlist.m3u8"

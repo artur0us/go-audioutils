@@ -25,3 +25,13 @@ const (
 	AudioFileDurationGetFailFFProbeReturnedErr     int = 5 // ffprobe returned error
 	AudioFileDurationGetFailFFProbeFormatRespEmpty int = 6 // ffprobe format section is empty
 )
+
+// Audio file waveform data getting fail enums
+const (
+	AudioFileWaveformDataGetFailNotImpl                  int = 1 // not implemented
+	AudioFileWaveformDataGetFailUnknown                  int = 2 // unknown error
+	AudioFileWaveformDataGetFailInvalidInputData         int = 3 // invalid input data
+	AudioFileWaveformDataGetFailInvalidSrcLocType        int = 4 // invalid source location type
+	AudioFileWaveformDataGetFailFileNotFound             int = 5 // specified file is not found
+	AudioFileWaveformDataGetFailAudiowaveformReturnedErr int = 6 // audiowaveform returned error
+)

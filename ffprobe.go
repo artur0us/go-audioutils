@@ -10,7 +10,7 @@ import (
 
 // ffprobe binary path
 const (
-	FFProbePath string = "ffprobe"
+	ffprobePath string = "ffprobe"
 )
 
 // ffprobeGetAudioFileInfo : ...
@@ -37,7 +37,7 @@ func (_a *AudioUtils) ffprobeGetAudioFileInfo(fileLocation string) (*FFProbeProb
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	cmd := exec.CommandContext(ctx, FFProbePath, args...)
+	cmd := exec.CommandContext(ctx, ffprobePath, args...)
 	cmd.SysProcAttr = nil
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
